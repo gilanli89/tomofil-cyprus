@@ -1,15 +1,18 @@
 // Cloudflare Pages Function: /api/analyze
-// Uses Google Gemini 1.5 Flash for FREE car image analysis
+// Uses Google Gemini for FREE car image analysis
 
 export async function onRequestPost(context) {
   const { request, env } = context;
   
-  // Get API key from Cloudflare environment variable
-  const GOOGLE_API_KEY = env.GOOGLE_API_KEY || 'AIzaSyDfNUt6aFjMOocrGC26LnPNlcYD3AZTvEQ';
+  // SECURITY: API key ONLY from Cloudflare env variable (never hardcoded)
+  const GOOGLE_API_KEY = env.GOOGLE_API_KEY;
   
   if (!GOOGLE_API_KEY) {
     return new Response(
-      JSON.stringify({ error: 'API key not configured. Set GOOGLE_API_KEY in Cloudflare Pages settings.' }),
+      JSON.stringify({ 
+        error: 'API key not configured',
+        details: 'Admin needs to set GOOGLE_API_KEY in Cloudflare Pages → Settings → Environment Variables'
+      }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
@@ -33,9 +36,9 @@ export async function onRequestPost(context) {
       }
     }));
 
-    // Gemini API request
+    // Gemini API request (using stable v1beta with gemini-2.0-flash)
     const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GOOGLE_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
