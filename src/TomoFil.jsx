@@ -34,9 +34,9 @@ const SEED_CARS = [
     photos: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80'],
   },
   {
-    id: '4', brand: 'Volkswagen', model: 'Golf R', year: 2022, type: 'Hatchback',
-    color: 'Gri', condition: 'Mükemmel', km: 12000, owners: 1, price: 32000,
-    location: 'Lefkoşa', features: ['DSG', 'LED Far', 'Adaptive Cruise'],
+    id: '4', brand: 'Chevrolet', model: 'Camaro SS', year: 2020, type: 'Coupe',
+    color: 'Mavi', condition: 'Mükemmel', km: 12000, owners: 1, price: 48000,
+    location: 'Lefkoşa', features: ['V8 Motor', 'LED Far', 'Spor Egzoz'],
     photos: ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80'],
   },
   {
