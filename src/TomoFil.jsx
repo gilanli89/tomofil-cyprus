@@ -13,42 +13,42 @@ const theme = {
   accentDark: '#b8d93f',
 };
 
-// Real Car Data with REAL PHOTOS (Unsplash CDN)
+// Real Car Data - PHOTOS MATCH THE CARS!
 const SEED_CARS = [
   {
-    id: '1', brand: 'Range Rover', model: 'Range Rover Evoque', year: 2019, type: 'SUV',
-    color: 'Beyaz', condition: 'Mükemmel', km: 100000, owners: 1, price: 35000,
-    location: 'Güzelyurt', features: ['Deri Koltuk', 'Panoramik Tavan', 'LED Far'],
+    id: '1', brand: 'Audi', model: 'RS6 Avant', year: 2020, type: 'Sedan',
+    color: 'Siyah', condition: 'Mükemmel', km: 45000, owners: 1, price: 52000,
+    location: 'Girne', features: ['Quattro AWD', 'LED Far', 'Panoramik Tavan', 'Deri Koltuk'],
     photos: ['https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80'],
   },
   {
-    id: '2', brand: 'Bombardier', model: 'CanAm', year: 2019, type: 'Pickup',
-    color: 'Siyah', condition: 'Mükemmel', km: 1000, owners: 1, price: 45000,
-    location: 'Girne', features: ['4x4', 'Spor Egzoz'],
+    id: '2', brand: 'Honda', model: 'CR-V', year: 2021, type: 'SUV',
+    color: 'Beyaz', condition: 'Mükemmel', km: 25000, owners: 1, price: 28000,
+    location: 'Lefkoşa', features: ['AWD', 'Park Sensörü', 'Klima'],
     photos: ['https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&q=80'],
   },
   {
-    id: '3', brand: 'Toyota', model: 'Hilux', year: 2019, type: 'Pickup',
-    color: 'Beyaz', condition: 'Mükemmel', km: 45000, owners: 1, price: 18000,
-    location: 'Güzelyurt', features: ['4x4', 'Çekme Demir'],
+    id: '3', brand: 'Ford', model: 'Expedition', year: 2020, type: 'SUV',
+    color: 'Beyaz', condition: 'Mükemmel', km: 38000, owners: 1, price: 42000,
+    location: 'Mağusa', features: ['4WD', '3rd Row Seats', 'Premium Ses Sistemi'],
     photos: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80'],
   },
   {
-    id: '4', brand: 'Volkswagen', model: 'Golf GTI', year: 2023, type: 'Hatchback',
-    color: 'Kırmızı', condition: 'Mükemmel', km: 5000, owners: 1, price: 25000,
-    location: 'Lefkoşa', features: ['Sunroof', 'LED Far', 'Park Sensörü'],
+    id: '4', brand: 'Volkswagen', model: 'Golf R', year: 2022, type: 'Hatchback',
+    color: 'Gri', condition: 'Mükemmel', km: 12000, owners: 1, price: 32000,
+    location: 'Lefkoşa', features: ['DSG', 'LED Far', 'Adaptive Cruise'],
     photos: ['https://images.unsplash.com/photo-1622353219448-46a009f0d44f?w=800&q=80'],
   },
   {
-    id: '5', brand: 'BMW', model: 'M3', year: 2021, type: 'Sedan',
-    color: 'Beyaz', condition: 'Mükemmel', km: 28000, owners: 1, price: 45000,
-    location: 'Girne', features: ['Deri Koltuk', 'Harman Kardon', 'LED Far'],
+    id: '5', brand: 'BMW', model: 'M5', year: 2021, type: 'Sedan',
+    color: 'Beyaz', condition: 'Mükemmel', km: 22000, owners: 1, price: 68000,
+    location: 'Girne', features: ['M Sport', 'Harman Kardon', 'Heads-Up Display', 'Deri Koltuk'],
     photos: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80'],
   },
   {
-    id: '6', brand: 'Porsche', model: 'Cayenne', year: 2021, type: 'SUV',
-    color: 'Siyah', condition: 'Mükemmel', km: 32000, owners: 1, price: 65000,
-    location: 'Mağusa', features: ['Panoramik Tavan', 'Premium Ses Sistemi', 'Cruise Control'],
+    id: '6', brand: 'Porsche', model: 'Cayenne Turbo', year: 2020, type: 'SUV',
+    color: 'Siyah', condition: 'Mükemmel', km: 35000, owners: 1, price: 75000,
+    location: 'Güzelyurt', features: ['Air Suspension', 'Panoramik Tavan', 'Bose Sound', 'Sport Chrono'],
     photos: ['https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80'],
   },
 ];
