@@ -13,43 +13,43 @@ const theme = {
   accentDark: '#b8d93f',
 };
 
-// Real Car Data (from screenshots)
+// Real Car Data with REAL PHOTOS (Unsplash CDN)
 const SEED_CARS = [
   {
     id: '1', brand: 'Range Rover', model: 'Range Rover Evoque', year: 2019, type: 'SUV',
     color: 'Beyaz', condition: 'Mükemmel', km: 100000, owners: 1, price: 35000,
     location: 'Güzelyurt', features: ['Deri Koltuk', 'Panoramik Tavan', 'LED Far'],
-    photos: ['/images/rangerover-1.jpg'],
+    photos: ['https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80'],
   },
   {
     id: '2', brand: 'Bombardier', model: 'CanAm', year: 2019, type: 'Pickup',
     color: 'Siyah', condition: 'Mükemmel', km: 1000, owners: 1, price: 45000,
     location: 'Girne', features: ['4x4', 'Spor Egzoz'],
-    photos: ['/images/canam-1.jpg'],
+    photos: ['https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&q=80'],
   },
   {
     id: '3', brand: 'Toyota', model: 'Hilux', year: 2019, type: 'Pickup',
     color: 'Beyaz', condition: 'Mükemmel', km: 45000, owners: 1, price: 18000,
     location: 'Güzelyurt', features: ['4x4', 'Çekme Demir'],
-    photos: ['/images/hilux-1.jpg'],
+    photos: ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80'],
   },
   {
     id: '4', brand: 'Volkswagen', model: 'Golf GTI', year: 2023, type: 'Hatchback',
-    color: 'Beyaz', condition: 'Mükemmel', km: 5000, owners: 1, price: 25000,
+    color: 'Kırmızı', condition: 'Mükemmel', km: 5000, owners: 1, price: 25000,
     location: 'Lefkoşa', features: ['Sunroof', 'LED Far', 'Park Sensörü'],
-    photos: ['/images/golf-gti-1.jpg'],
+    photos: ['https://images.unsplash.com/photo-1622353219448-46a009f0d44f?w=800&q=80'],
   },
   {
     id: '5', brand: 'BMW', model: 'M3', year: 2021, type: 'Sedan',
     color: 'Beyaz', condition: 'Mükemmel', km: 28000, owners: 1, price: 45000,
     location: 'Girne', features: ['Deri Koltuk', 'Harman Kardon', 'LED Far'],
-    photos: ['/images/bmw-m3-1.jpg'],
+    photos: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80'],
   },
   {
     id: '6', brand: 'Porsche', model: 'Cayenne', year: 2021, type: 'SUV',
-    color: 'Gri', condition: 'Mükemmel', km: 32000, owners: 1, price: 65000,
+    color: 'Siyah', condition: 'Mükemmel', km: 32000, owners: 1, price: 65000,
     location: 'Mağusa', features: ['Panoramik Tavan', 'Premium Ses Sistemi', 'Cruise Control'],
-    photos: ['/images/porsche-1.jpg'],
+    photos: ['https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80'],
   },
 ];
 
