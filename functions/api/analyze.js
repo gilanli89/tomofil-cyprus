@@ -80,6 +80,7 @@ Return ONLY the JSON object, no other text.`
             topP: 0.8,
             topK: 10,
             maxOutputTokens: 500,
+            responseMimeType: 'application/json',
           }
         })
       }
@@ -88,7 +89,7 @@ Return ONLY the JSON object, no other text.`
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
       return new Response(
-        JSON.stringify({ error: `Gemini API error: ${errorText}` }),
+        JSON.stringify({ error: `Gemini API error (${geminiResponse.status}): ${errorText}` }),
         { status: geminiResponse.status, headers: { 'Content-Type': 'application/json' } }
       );
     }
@@ -96,19 +97,39 @@ Return ONLY the JSON object, no other text.`
     const data = await geminiResponse.json();
     
     // Extract text from Gemini response
-    const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
     
-    // Parse JSON from text (remove markdown if present)
-    const cleanJson = textContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const carData = JSON.parse(cleanJson);
+    if (!textContent) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Gemini boş yanıt döndü',
+          rawResponse: JSON.stringify(data).slice(0, 500)
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Return in Claude-compatible format
+    // Clean JSON (remove markdown code blocks if present)
+    let cleanJson = textContent.trim();
+    cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/, '').trim();
+    
+    // Validate it's parseable JSON before sending
+    try {
+      JSON.parse(cleanJson);
+    } catch (parseErr) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'AI JSON formatında yanıt vermedi',
+          rawText: textContent.slice(0, 500)
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Return in Claude-compatible format (frontend parses the JSON)
     return new Response(
       JSON.stringify({
-        content: [{
-          type: 'text',
-          text: JSON.stringify(carData)
-        }]
+        content: [{ type: 'text', text: cleanJson }]
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );

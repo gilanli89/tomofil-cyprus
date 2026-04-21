@@ -408,10 +408,18 @@ function UploadScreen({ onSubmit, user }) {
     setAnalyzing(true);
     
     try {
-      const imageContent = photos.slice(0, 2).map(url => ({
-        type: 'image',
-        source: { type: 'base64', media_type: 'image/jpeg', data: url.split(',')[1] },
-      }));
+      // Convert photos to proper base64 format for Gemini
+      const imageContent = photos.slice(0, 2).map(url => {
+        const [meta, data] = url.split(',');
+        const mimeMatch = meta.match(/data:(.+?);/);
+        const media_type = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+        return {
+          type: 'image',
+          source: { type: 'base64', media_type, data },
+        };
+      });
+
+      console.log('🤖 Sending to AI:', imageContent.length, 'images');
 
       const res = await fetch('/api/analyze', {
         method: 'POST',
@@ -420,24 +428,50 @@ function UploadScreen({ onSubmit, user }) {
       });
 
       const data = await res.json();
-      const result = data.content?.[0]?.text ? JSON.parse(data.content[0].text) : {};
+      console.log('🤖 AI Response:', data);
+
+      if (!res.ok) {
+        throw new Error(data.error || `Server error: ${res.status}`);
+      }
+
+      if (!data.content?.[0]?.text) {
+        throw new Error('Geçersiz API yanıtı: ' + JSON.stringify(data).slice(0, 200));
+      }
+
+      // Parse JSON (remove markdown if present)
+      let jsonText = data.content[0].text.trim();
+      jsonText = jsonText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/, '');
+      
+      let result;
+      try {
+        result = JSON.parse(jsonText);
+      } catch (parseErr) {
+        console.error('JSON parse error. Raw text:', jsonText);
+        throw new Error('AI yanıtı JSON değil: ' + jsonText.slice(0, 100));
+      }
+
+      console.log('✅ Parsed result:', result);
       
       setAiData(result);
       setForm(prev => ({
         ...prev,
-        brand: result.brand || '',
-        model: result.model || '',
-        year: result.year || new Date().getFullYear(),
-        type: result.type || '',
-        color: result.color || '',
-        condition: result.condition || 'Mükemmel',
-        features: result.features || [],
+        brand: result.brand || prev.brand,
+        model: result.model || prev.model,
+        year: result.year || prev.year,
+        type: result.type || prev.type,
+        color: result.color || prev.color,
+        condition: result.condition || prev.condition,
+        features: Array.isArray(result.features) ? result.features : prev.features,
       }));
       setStep(3);
     } catch (err) {
-      console.error('AI analiz hatası:', err);
-      setStep(3); // Hata olsa bile form'a geç
+      console.error('❌ AI analiz hatası:', err);
+      alert('AI analizi başarısız:\n\n' + err.message + '\n\nManuel olarak doldurabilirsin.');
+      setStep(3);
     }
+    
+    setAnalyzing(false);
+  };
     
     setAnalyzing(false);
   };
