@@ -37,7 +37,7 @@ const SEED_CARS = [
     id: '4', brand: 'Volkswagen', model: 'Golf R', year: 2022, type: 'Hatchback',
     color: 'Gri', condition: 'Mükemmel', km: 12000, owners: 1, price: 32000,
     location: 'Lefkoşa', features: ['DSG', 'LED Far', 'Adaptive Cruise'],
-    photos: ['https://images.unsplash.com/photo-1622353219448-46a009f0d44f?w=800&q=80'],
+    photos: ['https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80'],
   },
   {
     id: '5', brand: 'BMW', model: 'M5', year: 2021, type: 'Sedan',
