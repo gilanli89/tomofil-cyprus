@@ -1,15 +1,15 @@
 // Cloudflare Pages Function: /api/analyze
-// Proxies image-analysis requests to Anthropic's Claude API.
+// Uses Google Gemini 1.5 Flash for FREE car image analysis
 
 export async function onRequestPost(context) {
   const { request, env } = context;
   
   // Get API key from Cloudflare environment variable
-  const ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
+  const GOOGLE_API_KEY = env.GOOGLE_API_KEY || 'AIzaSyDfNUt6aFjMOocrGC26LnPNlcYD3AZTvEQ';
   
-  if (!ANTHROPIC_API_KEY) {
+  if (!GOOGLE_API_KEY) {
     return new Response(
-      JSON.stringify({ error: 'API key not configured. Set ANTHROPIC_API_KEY in Cloudflare Pages settings.' }),
+      JSON.stringify({ error: 'API key not configured. Set GOOGLE_API_KEY in Cloudflare Pages settings.' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
@@ -25,59 +25,95 @@ export async function onRequestPost(context) {
       );
     }
 
-    const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-1',
-        max_tokens: 1000,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              ...images,
+    // Convert images to Gemini format
+    const imageParts = images.map(img => ({
+      inline_data: {
+        mime_type: img.source.media_type,
+        data: img.source.data
+      }
+    }));
+
+    // Gemini API request
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              ...imageParts,
               {
-                type: 'text',
-                text: `Analyze these car photos and extract the vehicle's details. Return ONLY valid JSON (no markdown, no explanation):
+                text: `Analyze these car photos and extract the vehicle's details. Return ONLY valid JSON (no markdown, no backticks, no explanation):
 
 {
-  "brand": "...",
-  "model": "...",
+  "brand": "Toyota",
+  "model": "Corolla",
   "year": 2020,
-  "type": "Sedan|SUV|Pickup|Hatchback|Coupe|Van|Convertible",
-  "color": "...",
-  "condition": "Excellent|Good|Fair|Needs Work",
-  "features": ["feature 1", "feature 2", ...]
+  "type": "Sedan",
+  "color": "White",
+  "condition": "Mükemmel",
+  "features": ["LED Far", "Park Sensörü", "Klima"]
 }
 
-Identify the brand (Toyota, BMW, Mercedes, etc.), specific model, estimated production year, body type, color, overall condition, and visible features (alloy wheels, sunroof, leather seats, LED lights, parking sensors, etc.). Be specific and accurate. If unsure, use best-guess values. Return ONLY the JSON object.`,
-              },
-            ],
-          },
-        ],
-      }),
-    });
+IMPORTANT:
+- brand: Exact car manufacturer (BMW, Mercedes, Toyota, Ford, etc.)
+- model: Specific model name (320i, Corolla, Mustang, etc.)
+- year: Production year (best estimate)
+- type: ONE of: Sedan, SUV, Pickup, Hatchback, Coupe, Cabrio, Van, Wagon, Crossover
+- color: Main exterior color in Turkish (Beyaz, Siyah, Gri, Mavi, Kırmızı, etc.)
+- condition: ONE of: Mükemmel, Çok İyi, İyi, Orta
+- features: Array of visible features in Turkish (LED Far, Panoramik Tavan, Deri Koltuk, Park Sensörü, 360 Kamera, Sunroof, Cruise Control, Android Auto / CarPlay, Premium Ses Sistemi, etc.)
 
-    if (!anthropicResponse.ok) {
-      const errorText = await anthropicResponse.text();
+Return ONLY the JSON object, no other text.`
+              }
+            ]
+          }],
+          generationConfig: {
+            temperature: 0.1,
+            topP: 0.8,
+            topK: 10,
+            maxOutputTokens: 500,
+          }
+        })
+      }
+    );
+
+    if (!geminiResponse.ok) {
+      const errorText = await geminiResponse.text();
       return new Response(
-        JSON.stringify({ error: `Anthropic API error: ${errorText}` }),
-        { status: anthropicResponse.status, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: `Gemini API error: ${errorText}` }),
+        { status: geminiResponse.status, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const data = await anthropicResponse.json();
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (err) {
+    const data = await geminiResponse.json();
+    
+    // Extract text from Gemini response
+    const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    
+    // Parse JSON from text (remove markdown if present)
+    const cleanJson = textContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const carData = JSON.parse(cleanJson);
+
+    // Return in Claude-compatible format
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({
+        content: [{
+          type: 'text',
+          text: JSON.stringify(carData)
+        }]
+      }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+
+  } catch (err) {
+    console.error('Analysis error:', err);
+    return new Response(
+      JSON.stringify({ 
+        error: err.message,
+        details: 'Failed to analyze image. Please try again.'
+      }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
