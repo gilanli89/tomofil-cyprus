@@ -1,10 +1,18 @@
 // Cloudflare Pages Function: /api/analyze
 // Proxies image-analysis requests to Anthropic's Claude API.
 
-const ANTHROPIC_API_KEY = 'REDACTED_KEY';
-
 export async function onRequestPost(context) {
-  const { request } = context;
+  const { request, env } = context;
+  
+  // Get API key from Cloudflare environment variable
+  const ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
+  
+  if (!ANTHROPIC_API_KEY) {
+    return new Response(
+      JSON.stringify({ error: 'API key not configured. Set ANTHROPIC_API_KEY in Cloudflare Pages settings.' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
 
   try {
     const body = await request.json();
